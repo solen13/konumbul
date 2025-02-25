@@ -13,14 +13,14 @@ const TileLayer = dynamic(
 );
 
 interface MapPageProps {
-  children?: ReactNode;
+  center?: [number, number]; // center prop'u
+  children?: React.ReactNode; // children prop'u
 }
-
-const MapPage: React.FC<MapPageProps> = ({ children }) => {
+const MapPage: React.FC<MapPageProps> = ({ center, children }) => {
   return (
     <MapContainer
-      center={[41.0082, 28.9784]}
-      zoom={13}
+      center={center}
+      zoom={7}
       style={{ height: '500px', width: '100%', marginTop: '10px' }}
     >
       <TileLayer

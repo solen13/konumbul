@@ -1,11 +1,11 @@
-'use client'; // Bu sayfanın istemci tarafında çalışacağını belirtir
+'use client';
 import React, { useState, useEffect } from 'react';
 import dynamic from 'next/dynamic';
 import { Input, Button, Box, Flex } from '@chakra-ui/react';
 import L, { LeafletEvent, LatLng } from 'leaflet';
 import Map from '@/components/map/map';
-// Bileşenleri dinamik olarak yükle (SSR'yi devre dışı bırak)
 
+// Bileşenleri dinamik olarak yükle (SSR'yi devre dışı bırak)
 const Marker = dynamic(
   () => import('react-leaflet').then((mod) => mod.Marker),
   { ssr: false }
@@ -21,11 +21,22 @@ interface LocationData {
   iconColor: string;
 }
 
-const ParentComponent = () => {
-  const [markerPosition, setMarkerPosition] = useState<LatLng | null>(null);
+interface LocationFormProps {
+  initialData?: LocationData; // Güncelleme için mevcut lokasyon verisi
+  onSave: (newLocation: LocationData) => void; // Kaydetme veya güncelleme işlemi
+}
+
+const LocationForm: React.FC<LocationFormProps> = ({ onSave, initialData }) => {
+  const [markerPosition, setMarkerPosition] = useState<LatLng | null>(
+    initialData?.position || null
+  );
   const [L, setL] = useState<typeof import('leaflet') | null>(null);
-  const [locationName, setLocationName] = useState<string>('');
-  const [iconColor, setIconColor] = useState<string>('#000000');
+  const [locationName, setLocationName] = useState<string>(
+    initialData?.name || ''
+  );
+  const [iconColor, setIconColor] = useState<string>(
+    initialData?.iconColor || '#000000'
+  );
   const [locations, setLocations] = useState<LocationData[]>([]);
 
   useEffect(() => {
@@ -57,28 +68,44 @@ const ParentComponent = () => {
     if (!markerPosition || !locationName) return;
 
     const newLocation: LocationData = {
-      id: Date.now(), // Benzersiz bir ID oluştur
+      id: initialData?.id || Date.now(), // Güncelleme modunda mevcut ID'yi kullan, yoksa yeni ID oluştur
       name: locationName,
       position: markerPosition,
       iconColor: iconColor,
     };
 
-    const updatedLocations = [...locations, newLocation];
+    let updatedLocations: LocationData[];
+    if (initialData) {
+      // Güncelleme modu
+      updatedLocations = locations.map((loc) =>
+        loc.id === initialData.id ? newLocation : loc
+      );
+    } else {
+      // Yeni ekleme modu
+      updatedLocations = [...locations, newLocation];
+      // Yeni ekleme modunda inputları sıfırla
+      setLocationName('');
+      setIconColor('#000000');
+    }
+
     setLocations(updatedLocations);
     localStorage.setItem('locations', JSON.stringify(updatedLocations));
 
-    // Inputları sıfırla
-    setLocationName('');
-    setIconColor('#000000');
+    // Üst bileşene yeni lokasyonu ilet
+    onSave(newLocation);
   };
 
   if (!L) {
     return null; // Leaflet yüklenene kadar bir şey gösterme
   }
 
+  const center: [number, number] = markerPosition
+    ? [markerPosition.lat, markerPosition.lng]
+    : [41.0082, 28.9784];
+
   return (
     <div>
-      <Map>
+      <Map center={center}>
         <Marker
           position={markerPosition || [41.0082, 28.9784]}
           eventHandlers={{
@@ -124,11 +151,13 @@ const ParentComponent = () => {
             value={iconColor}
             onChange={(e) => setIconColor(e.target.value)}
           />
-          <Button onClick={handleSaveLocation}>Save Location</Button>
+          <Button onClick={handleSaveLocation}>
+            {initialData ? 'Update Location' : 'Save Location'}
+          </Button>
         </Flex>
       </Box>
     </div>
   );
 };
 
-export default ParentComponent;
+export default LocationForm;
