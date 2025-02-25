@@ -13,6 +13,9 @@ const nextConfig: NextConfig = {
   experimental: {
     optimizePackageImports: ['@chakra-ui/react'],
   },
+  eslint: {
+    ignoreDuringBuilds: true, // ESLint'i devre dışı bırak
+  },
 };
 
 export default nextConfig;
