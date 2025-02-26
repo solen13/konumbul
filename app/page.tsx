@@ -38,7 +38,7 @@ export default function Home() {
       {/* Üst Kısım */}
       <Box mt={{ base: 6, md: 10 }}>
         <Flex
-          direction={{ base: 'column', md: 'row' }} // Mobilde sütun, masaüstünde satır
+          direction={{ base: 'column', md: 'row' }}
           justify="space-between"
           align="center"
           gap={{ base: 6, md: 0 }}
@@ -87,7 +87,7 @@ export default function Home() {
           <Image
             src="https://media.istockphoto.com/id/535913739/vector/vector-map-with-pin-pointer-illustration.jpg?s=612x612&w=0&k=20&c=k70y-GYfXRUiuSdq7ie_BF9Mvry6XlgZV3ENFR-TDJk="
             alt="App Logo"
-            boxSize={{ base: '300px', md: '500px' }} // Mobilde küçük, masaüstünde büyük
+            boxSize={{ base: '300px', md: '500px' }}
             mb={6}
           />
         </Flex>
@@ -95,7 +95,7 @@ export default function Home() {
 
       {/* Kartlar */}
       <Flex
-        direction={{ base: 'column', md: 'row' }} // Mobilde sütun, masaüstünde satır
+        direction={{ base: 'column', md: 'row' }}
         justify="space-between"
         gap={{ base: 6, md: 4 }}
         mt={{ base: 6, md: 10 }}
@@ -109,7 +109,7 @@ export default function Home() {
             <Image
               src={card.imageUrl}
               alt={card.title}
-              boxSize={{ base: '100%', md: '380px' }} // Mobilde tam genişlik, masaüstünde sabit boyut
+              boxSize={{ base: '100%', md: '380px' }}
               objectFit="cover"
             />
             <Box p={4}>

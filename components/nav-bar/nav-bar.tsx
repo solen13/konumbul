@@ -32,7 +32,7 @@ const Navbar = () => {
     <Flex
       as="nav"
       align="center"
-      justify="space-around"
+      justify={{ base: 'space-between', md: 'space-around ' }}
       wrap="wrap"
       padding={{ base: 4, md: '1.5rem' }}
       bg="orange.50"

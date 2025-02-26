@@ -53,7 +53,6 @@ const UpdateLocationPageContent = () => {
 
   return (
     <div>
-      <h1>Update Location </h1>
       <LocationForm initialData={initialData} onSave={handleSave} />
     </div>
   );

@@ -1,5 +1,5 @@
 'use client';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 
 import LocationForm from '@/components/LocationForm/LocationForm';
 interface LocationData {

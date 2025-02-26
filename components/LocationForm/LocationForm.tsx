@@ -1,10 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import dynamic from 'next/dynamic';
-import { Input, Button, Box, Flex } from '@chakra-ui/react';
+import { Input, Button, Flex, Container } from '@chakra-ui/react';
 import L, { LeafletEvent, LatLng } from 'leaflet';
 import Map from '@/components/map/map';
 
-// Bileşenleri dinamik olarak yükle (SSR'yi devre dışı bırak)
 const Marker = dynamic(
   () => import('react-leaflet').then((mod) => mod.Marker),
   { ssr: false }
@@ -21,8 +20,8 @@ interface LocationData {
 }
 
 interface LocationFormProps {
-  initialData?: LocationData; // Güncelleme için mevcut lokasyon verisi
-  onSave: (newLocation: LocationData) => void; // Kaydetme veya güncelleme işlemi
+  initialData?: LocationData;
+  onSave: (newLocation: LocationData) => void;
 }
 
 const LocationForm: React.FC<LocationFormProps> = ({ onSave, initialData }) => {
@@ -39,25 +38,22 @@ const LocationForm: React.FC<LocationFormProps> = ({ onSave, initialData }) => {
   const [locations, setLocations] = useState<LocationData[]>([]);
 
   useEffect(() => {
-    // Leaflet kütüphanesini ve CSS dosyasını yalnızca istemci tarafında yükle
     import('leaflet').then((leaflet) => {
-      setL(leaflet.default || leaflet); // `default` özelliğini kontrol et
+      setL(leaflet.default || leaflet);
       import('leaflet/dist/leaflet.css');
     });
 
-    // localStorage'dan kayıtlı lokasyonları yükle
     const savedLocations = localStorage.getItem('locations');
     if (savedLocations) {
-      setLocations(JSON.parse(savedLocations)); // Veriyi almak için null kontrolü yapılmalı
+      setLocations(JSON.parse(savedLocations));
     }
   }, []);
 
   useEffect(() => {
-    // locations değiştiğinde localStorage'ı güncelle
     if (locations.length > 0) {
       localStorage.setItem('locations', JSON.stringify(locations));
     }
-  }, [locations]); // locations state'i değiştiğinde çalışacak
+  }, [locations]);
 
   const handleDragEnd = (e: LeafletEvent) => {
     const position: LatLng = e.target.getLatLng();
@@ -68,7 +64,7 @@ const LocationForm: React.FC<LocationFormProps> = ({ onSave, initialData }) => {
     if (!markerPosition || !locationName) return;
 
     const newLocation: LocationData = {
-      id: initialData?.id || Date.now(), // Güncelleme modunda mevcut ID'yi kullan, yoksa yeni ID oluştur
+      id: initialData?.id || Date.now(),
       name: locationName,
       position: markerPosition,
       iconColor: iconColor,
@@ -76,25 +72,23 @@ const LocationForm: React.FC<LocationFormProps> = ({ onSave, initialData }) => {
 
     let updatedLocations: LocationData[];
     if (initialData) {
-      // Güncelleme modu
       updatedLocations = locations.map((loc) =>
         loc.id === initialData.id ? newLocation : loc
       );
     } else {
-      // Yeni ekleme modu
       updatedLocations = [...locations, newLocation];
-      // Yeni ekleme modunda inputları sıfırla
+
       setLocationName('');
       setIconColor('#000000');
     }
 
-    setLocations(updatedLocations); // Updated locations state'ini ayarla
-    // Üst bileşene yeni lokasyonu ilet
+    setLocations(updatedLocations);
+
     onSave(newLocation);
   };
 
   if (!L) {
-    return null; // Leaflet yüklenene kadar bir şey gösterme
+    return null;
   }
 
   const center: [number, number] = markerPosition
@@ -107,7 +101,7 @@ const LocationForm: React.FC<LocationFormProps> = ({ onSave, initialData }) => {
         <Marker
           position={markerPosition || [41.0082, 28.9784]}
           eventHandlers={{
-            dragend: handleDragEnd, // Marker'ın sürüklendiğinde konumu değiştirecek fonksiyon
+            dragend: handleDragEnd,
           }}
           icon={
             new L.DivIcon({
@@ -134,7 +128,7 @@ const LocationForm: React.FC<LocationFormProps> = ({ onSave, initialData }) => {
         </Marker>
       </Map>
 
-      <Box marginTop="10px">
+      <Container mt="10">
         <Flex gap="10px" alignItems="center">
           <Input
             placeholder="Location Name"
@@ -153,7 +147,7 @@ const LocationForm: React.FC<LocationFormProps> = ({ onSave, initialData }) => {
             {initialData ? 'Update Location' : 'Save Location'}
           </Button>
         </Flex>
-      </Box>
+      </Container>
     </div>
   );
 };

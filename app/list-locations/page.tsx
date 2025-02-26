@@ -1,7 +1,14 @@
-'use client'; // Bu sayfanın bir Client Component olduğunu belirtir
+'use client';
 
 import React, { useEffect, useState } from 'react';
-import { Box, List, ListItem, Flex, Button, Text } from '@chakra-ui/react';
+import {
+  List,
+  ListItem,
+  Flex,
+  Button,
+  Text,
+  Container,
+} from '@chakra-ui/react';
 import { useRouter } from 'next/navigation';
 
 interface LocationData {
@@ -15,38 +22,35 @@ const LocationsListPage: React.FC = () => {
   const router = useRouter();
   const [savedLocations, setSavedLocations] = useState<LocationData[]>([]);
 
-  // localStorage'dan kayıtlı lokasyonları al (yalnızca istemci tarafında)
   useEffect(() => {
     const locations = JSON.parse(localStorage.getItem('locations') || '[]');
     setSavedLocations(locations);
   }, []);
 
-  // Detay sayfasına yönlendirme
   const handleViewDetails = (id: number) => {
     router.push(`/update-locations?id=${id}`);
   };
 
   return (
-    <Box padding="20px">
+    <Container>
       <Text fontSize="2xl" fontWeight="bold" marginBottom="20px">
-        Kayıtlı Lokasyonlar
+        Saved Locations
       </Text>
+
       <List.Root>
         {savedLocations.map((location) => (
-          <ListItem key={location.id}>
+          <ListItem key={location.id} mt="3" listStyleType="none">
             <Flex alignItems="center" justifyContent="space-between">
               <Flex alignItems="center">
-                {/* Lokasyon ikonu */}
-
                 <svg
                   viewBox="0 0 26 36"
-                  width="20px" // SVG genişliği
-                  height="20px" // SVG yüksekliği
-                  style={{ marginRight: '10px' }} // Sağdan boşluk
+                  width="20px"
+                  height="20px"
+                  style={{ marginRight: '10px' }}
                 >
                   <path
                     style={{
-                      fill: location.iconColor, // Dinamik renk
+                      fill: location.iconColor,
                       stroke: 'black',
                       vectorEffect: 'non-scaling-stroke',
                     }}
@@ -59,19 +63,18 @@ const LocationsListPage: React.FC = () => {
                   {location.position.lng.toFixed(4)})
                 </Text>
               </Flex>
-              {/* Detay butonu */}
               <Button
                 colorScheme="blue"
                 size="sm"
                 onClick={() => handleViewDetails(location.id)}
               >
-                Detay
+                Update
               </Button>
             </Flex>
           </ListItem>
         ))}
       </List.Root>
-    </Box>
+    </Container>
   );
 };
 
