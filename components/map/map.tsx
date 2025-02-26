@@ -1,4 +1,4 @@
-import React, { ReactNode } from 'react';
+import React from 'react';
 import dynamic from 'next/dynamic';
 import 'leaflet/dist/leaflet.css';
 
@@ -20,7 +20,7 @@ const MapPage: React.FC<MapPageProps> = ({ center, children }) => {
   return (
     <MapContainer
       center={center}
-      zoom={7}
+      zoom={5}
       style={{ height: '500px', width: '100%', marginTop: '10px' }}
     >
       <TileLayer

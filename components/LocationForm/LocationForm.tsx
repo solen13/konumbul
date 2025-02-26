@@ -1,4 +1,3 @@
-'use client';
 import React, { useState, useEffect } from 'react';
 import dynamic from 'next/dynamic';
 import { Input, Button, Box, Flex } from '@chakra-ui/react';
@@ -47,17 +46,18 @@ const LocationForm: React.FC<LocationFormProps> = ({ onSave, initialData }) => {
     });
 
     // localStorage'dan kayıtlı lokasyonları yükle
-    const savedLocations = JSON.parse(
-      localStorage.getItem('locations') || '[]'
-    );
-    setLocations(savedLocations);
+    const savedLocations = localStorage.getItem('locations');
+    if (savedLocations) {
+      setLocations(JSON.parse(savedLocations)); // Veriyi almak için null kontrolü yapılmalı
+    }
   }, []);
 
   useEffect(() => {
-    if (markerPosition) {
-      console.log('Marker Position:', markerPosition);
+    // locations değiştiğinde localStorage'ı güncelle
+    if (locations.length > 0) {
+      localStorage.setItem('locations', JSON.stringify(locations));
     }
-  }, [markerPosition]);
+  }, [locations]); // locations state'i değiştiğinde çalışacak
 
   const handleDragEnd = (e: LeafletEvent) => {
     const position: LatLng = e.target.getLatLng();
@@ -88,9 +88,7 @@ const LocationForm: React.FC<LocationFormProps> = ({ onSave, initialData }) => {
       setIconColor('#000000');
     }
 
-    setLocations(updatedLocations);
-    localStorage.setItem('locations', JSON.stringify(updatedLocations));
-
+    setLocations(updatedLocations); // Updated locations state'ini ayarla
     // Üst bileşene yeni lokasyonu ilet
     onSave(newLocation);
   };
